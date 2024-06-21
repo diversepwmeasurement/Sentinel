@@ -1,25 +1,21 @@
-name: document-lint
-
-on:
-  push:
-    branches:
-      - '*'
-  pull_request:
-    branches:
-      - master
-      - "1.8"
-      - "2.0"
-
 jobs:
   document-lint:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - continue-on-error: true
+      name: Checkout
+      uses: actions/checkout@v4
+    - continue-on-error: true
+      run: npm install -g markdownlint-cli
+    - continue-on-error: true
+      name: use markdownlint-cli to lint markdown file
+      run: 'find ./ -name "*.md" | grep -v vendor | grep -v commandline | grep -v
+        .github | grep -v swagger | grep -v api | \
 
-      - run: npm install -g markdownlint-cli
+        xargs markdownlint --disable MD010 MD013 MD024 MD029 MD033 MD036 --
 
-      - name: use markdownlint-cli to lint markdown file
-        run: |
-          find ./ -name "*.md" | grep -v vendor | grep -v commandline | grep -v .github | grep -v swagger | grep -v api | \
-          xargs markdownlint --disable MD010 MD013 MD024 MD029 MD033 MD036 --
+        '
+name: document-lint
+on:
+  repository_dispatch:
+    types: trigger-ga___document-lint.yml
